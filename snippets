@@ -1,0 +1,193 @@
+{
+    // Place your backend workspace snippets here. Each snippet is defined under a snippet name and has a scope, prefix, body and 
+    // description. Add comma separated ids of the languages where the snippet is applicable in the scope field. If scope 
+    // is left empty or omitted, the snippet gets applied to all languages. The prefix is what is 
+    // used to trigger the snippet and the body will be expanded and inserted. Possible variables are: 
+    // $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. 
+    // Placeholders with the same ids are connected.
+    // Example:
+    // "Print to console": {
+    // 	"scope": "javascript,typescript",
+    // 	"prefix": "log",
+    // 	"body": [
+    // 		"console.log('$1');",
+    // 		"$2"
+    // 	],
+    // 	"description": "Log output to console"
+    // }
+    "Logger Function info": {
+        "scope": "javascript, typescript",
+        "prefix": "lfi",
+        "body": [
+            "logger.info(\"${TM_FILENAME_BASE}.$1\");"
+        ],
+        "description": "logs a function info"
+    },
+    "Logger Function error": {
+        "scope": "javascript, typescript",
+        "prefix": "lfe",
+        "body": [
+            "logger.error(\"${TM_FILENAME_BASE}.$1\");",
+            "logger.error($2);"
+        ],
+        "description": "logs a function info"
+    },
+    "Controller Function": {
+        "scope": "javascript, typescript",
+        "prefix": "fncon",
+        "body": [
+            "public async $1(req: Request, res: Response) {",
+            "\tlogger.info(\"${TM_FILENAME_BASE}.$1\");",
+            "\ttry{",
+            "\t\tlet _errors = validationResult(req);",
+            "\t\tif (!_errors.isEmpty()) {",
+            "\t\t\treturn NResponse.SchemaError(res, Errors.INVALID_REQUEST, _errors.array());",
+            "\t\t}",
+            "\t\t$3",
+            "\t} catch(err) {",
+            "\t\tlogger.error(err);",
+            "\t\treturn NResponse.Error(res, Errors.INTERNAL_SERVER_ERROR, err);",
+            "\t}",
+            "}"
+        ],
+        "description": "Create a controller function"
+    },
+    "Service Function": {
+        "scope": "javascript, typescript",
+        "prefix": "fns",
+        "body": [
+            "async $1() {",
+            "\tlogger.info(\"${TM_FILENAME_BASE}.$1\");",
+            "\ttry{",
+            "\t\t$2",
+            "\t} catch(err) {",
+            "\t\tlogger.error(err);",
+            "\t\tthrow err",
+            "\t}",
+            "}"
+        ],
+        "description": "Create a service function"
+    },
+    "Controller": {
+        "scope": "javascript, typescript",
+        "prefix": "con",
+        "body": [
+            "import { Request, Response } from 'express';",
+            "import { validationResult } from 'express-validator';",
+            "export default class $1 {",
+            "$2",
+            "}",
+            "export const ${1/(.)/${1:/downcase}/} = new $1();"
+        ],
+        "description": "Create a controller"
+    },
+    "Response Error": {
+        "scope": "javascript, typescript",
+        "prefix": "eres",
+        "body": [
+            "return NResponse.Error(res, Errors.$1);"
+        ]
+    },
+    "Request Validation": {
+        "scope": "javascript, typescript",
+        "prefix": "vreq",
+        "body": [
+            "let _errors = validationResult(req);",
+            "if (!_errors.isEmpty()) {",
+            "\treturn NResponse.Error(res, Errors.INVALID_REQUEST, _errors);",
+            "}"
+        ],
+        "description": "Validation login for a request"
+    },
+    "New Schema": {
+        "scope": "javascript, typescript",
+        "prefix": "nsch",
+        "body": [
+            "import { Model, model, Types, Schema, Document } from \"mongoose\";",
+            "",
+            "export interface I$1Document extends Document, I$1 { }",
+            "export interface I$1 {",
+            "\t_id:any",
+            "\t$3",
+            "\tcreatedAt: Date,",
+            "\tupdatedAt: Date,",
+            "}",
+            "export const ${2:I$1Schema}: Schema = new Schema({",
+            "\t$4",
+            "\tcreatedAt: { type: Date, default: new Date()},",
+            "\tupdatedAt: { type: Date, default: new Date()},",
+            "})",
+            "",
+            "",
+            "export const $1: Model<I$1Document> = model<I$1Document>('$1', ${2:I$1Schema});"
+        ],
+        "description": "Creates a new schema"
+    },
+    "New Controller": {
+        "scope": "javascript, typescript",
+        "prefix": "ncon",
+        "body": [
+            "import { Request, Response } from 'express';",
+            "import { LifeError } from '../infra/life-error';",
+            "import logger from '../helpers/logger';",
+            "import { validationResult } from 'express-validator';",
+            "import NResponse from '../services/response.service';",
+            "import { Errors } from '../infra/messages';",
+            "\n",
+            "export class $1 {\n",
+            "\t$2",
+            "\n}"
+        ],
+        "description": "Scaffolding a new controller"
+    },
+    "New Route": {
+        "scope": "javascript, typescript",
+        "prefix": "nroute",
+        "body": [
+            "import {Express, Router} from 'express'",
+            "\n",
+            "export default class $1 {",
+            "\tconstructor(app: Express) {",
+            "\t\tlet _router = Router();",
+            "\t\t$3",
+            "\t\tapp.use('/v1/$2', _router);",
+            "\t}",
+            "}"
+        ]
+    },
+    "Not Found error": {
+        "scope": "javascript, typescript",
+        "prefix": "enf",
+        "body": [
+            "throw new LifeError(Errors.NOT_FOUND);"
+        ]
+    },
+    "Unauthr error": {
+        "scope": "javascript, typescript",
+        "prefix": "eua",
+        "body": [
+            "throw new LifeError(Errors.UNAUTHORIZED);"
+        ]
+    },
+    "Invalid Request error": {
+        "scope": "javascript, typescript",
+        "prefix": "eir",
+        "body": [
+            "throw new LifeError(Errors.INVALID_REQUEST);"
+        ]
+    },
+    "Send Response OK": {
+        "scope": "javascript, typescript",
+        "prefix": "rok",
+        "body": [
+            "NResponse.OK(res, ${1});"
+        ]
+    },
+    "Send Response Created": {
+        "scope": "javascript, typescript",
+        "prefix": "rcreated",
+        "body": [
+            "NResponse.Created(res, ${1});"
+        ]
+    }
+}

@@ -1,0 +1,10 @@
+{
+    "watch": [
+        "src"
+    ],
+    "ext": "ts",
+    "ignore": [
+        "src/public"
+    ],
+    "exec": "node  dist/index.js -e ts"
+}
