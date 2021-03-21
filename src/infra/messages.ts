@@ -19,8 +19,8 @@ export const Errors = {
     INVALID_REQUEST: () => ({ msg: 'Invalid request', code: 400, status: 400, }),
     UNKNOWN_ERROR: (() => ({ msg: 'Unknown error', code: 400, status: 400, })) as FMessage,
     INVALID_TOKEN_AUTHORIZATION_STRATEGY: () => ({ msg: 'Invalid authorization strategy', code: 401, status: 401, }),
-    NOT_FOUND: () => ({ msg: 'Not found', code: 400, status: 404, }),
-    ALREADY_EXISTS: (model?: string) => ({ msg: ``, code: 400, status: 400, }),
+    NOT_FOUND: (what: string = '') => ({ msg: `${what} not found`, code: 400, status: 404, }),
+    ALREADY_EXISTS: (model?: string) => ({ msg: `${model ? model : ''}`, code: 400, status: 400, }),
     INVALID_TOKEN: () => ({ msg: "Invalid token", code: 400, status: 400, }),
     INVALID_CREDENTIALS: () => ({ msg: "Invalid login credentials", code: 400, status: 400, }),
     ACCOUNT_NOT_ACTIVE: () => ({ msg: "Account not active", code: 105, status: 400, }),
@@ -43,4 +43,4 @@ export type Message = {
     status: number,
 }
 
-export type IMessage = Message; 
+export type IMessage = Message;
