@@ -1,18 +1,14 @@
 import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
+import { getParam, scoop } from '../helpers';
 import logger from '../helpers/logger';
-import NResponse from '../services/response.service';
-import { Errors } from '../infra/messages';
-import { User, IUser } from '../models/user.model';
-import UserService from '../services/user.service';
-import TokenService from '../services/token.service';
-import { scoop, getParam } from '../helpers';
-import userService from '../services/user.service';
 import { AppError } from '../infra/app-error';
-import { clearImmediate } from 'timers';
+import { Errors } from '../infra/messages';
+import { User } from '../models/user.model';
 import { Authenticator } from '../services/authenticator.service';
-import redisConnection from '../connections/redis.connection';
-import { REDIS_CONFIG } from '../config/redis.config';
+import NResponse from '../services/response.service';
+import TokenService from '../services/token.service';
+import userService from '../services/user.service';
 
 
 export default class AuthController {

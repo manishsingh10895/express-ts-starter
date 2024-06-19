@@ -1,4 +1,4 @@
-import { Server } from 'http';
+import { createServer } from 'http';
 import socket from 'socket.io'
 
 export class Socket {
@@ -6,8 +6,8 @@ export class Socket {
     public socket: socket.Socket;
 
     constructor(http) {
-        this.io = socket(http)
-        this.connect()
+        this.io = new socket.Server(http);
+        this.connect();
     }
 
     public connect() {

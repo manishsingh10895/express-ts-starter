@@ -4,7 +4,7 @@ import { Request } from 'express'
 import config from '../config'
 import path from 'path';
 import { FindOptions, ModelOptions } from '../services/request.service';
-import { Model, Types } from 'mongoose';
+import { Model, SortOrder, Types } from 'mongoose';
 import { parallel } from 'async';
 import logger from './logger';
 
@@ -13,7 +13,7 @@ export const globFiles = (location: string): string[] => {
 }
 
 export function toObjectId(id: string) {
-    if (Types.ObjectId.isValid(id)) return Types.ObjectId(id);
+    if (Types.ObjectId.isValid(id)) return new Types.ObjectId(id);
 
     return id;
 }
@@ -51,7 +51,7 @@ export function evaluateFindOptions(findOptions: FindOptions, model: Model<any>)
     console.log("QUERY", query);
 
     return model.find(query)
-        .sort({ [findOptions.sort.field]: findOptions.sort.order })
+        .sort({ [findOptions.sort.field]: findOptions.sort.order as SortOrder })
         .skip(findOptions.pagination.skip)
         .limit(findOptions.pagination.limit > 200 ? 200 : findOptions.pagination.limit)
         .populate(findOptions.populate || '')
@@ -62,7 +62,7 @@ export function evaluateCountedFindOptions<T, K>(findOptions: FindOptions, model
 
     return new Promise((resolve, reject) => {
         let _documents = evaluateFindOptions(findOptions, model);
-        let _count = model.find(query).count();
+        let _count = model.find(query).countDocuments();
 
         parallel({
             [name]: async () => {

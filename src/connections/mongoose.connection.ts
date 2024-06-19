@@ -13,10 +13,9 @@ export const ConnectDb = () => {
 
 
     mongoose.connect(config.DB_URL, {
-        promiseLibrary: global.Promise,
         user: config.DB_USER,
         pass: config.DB_PASS,
-        authdb: config.DB_AUTH_DB,
+        authSource: config.DB_AUTH_DB,
     })
         .then(() => {
             connection = mongoose.connection;

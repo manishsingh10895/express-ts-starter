@@ -1,19 +1,16 @@
 import * as bodyParser from 'body-parser'
+import cloudflare from 'cloudflare-express'
 import cookieParser from 'cookie-parser'
-import express, { NextFunction } from 'express'
-import mongoose from 'mongoose'
+import cors from 'cors'
+import express from 'express'
+import helmet from 'helmet'
 import logger from 'morgan'
-import _logger from '../helpers/logger';
 import * as path from 'path'
-import helmet from 'helmet';
-import cors from 'cors';
-import cloudflare from 'cloudflare-express';
-import config, { ROUTES_DIR, MODELS_DIR } from '../config'
-import { globFiles } from '../helpers'
-import AuthRoute from '../routes/auth.routes'
-import Redis from '../connections/redis.connection';
-import UserRoute from '../routes/user.routes';
 import { ConnectDb } from '../connections/mongoose.connection'
+import Redis from '../connections/redis.connection'
+import _logger from '../helpers/logger'
+import AuthRoute from '../routes/auth.routes'
+import UserRoute from '../routes/user.routes'
 import { Encryption } from '../services/encryption.service'
 
 
@@ -55,17 +52,6 @@ export default function () {
     new AuthRoute(app);
     new UserRoute(app);
     /** ROUTES */
-
-    // let routePaths = globFiles(ROUTES_DIR);
-
-    // routePaths.forEach(async (r) => {
-    //   try {
-    //     let mod = require(path.resolve(r));
-    //     console.log(mod);
-    //   } catch (error) {
-    //     console.error(error);
-    //   }
-    // });
 
     app.use(function (req, res) {
         if (req.headers.accept && req.headers.accept.includes('application/json')) {

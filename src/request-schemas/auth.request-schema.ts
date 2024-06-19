@@ -1,4 +1,4 @@
-import { checkSchema, ValidationSchema } from 'express-validator';
+import { checkSchema, Schema as ValidationSchema } from 'express-validator';
 import { Errors } from '../infra/messages';
 import { PASSWORD_REGEX } from '../constants';
 

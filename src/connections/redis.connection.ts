@@ -4,7 +4,7 @@ import logger from '../helpers/logger';
 
 export class RedisConnection {
 
-    client: redis.RedisClient;
+    client: redis.RedisClientType;
 
     constructor() {
         console.log("REDIS ALREADY", this.client);
@@ -17,14 +17,25 @@ export class RedisConnection {
         return `${config.APP_NAME}:${key}`;
     }
 
-    connect() {
+    async connect() {
         if (this.client) return this.client;
 
         this.client = redis.createClient({
-            host: config.REDIS_HOST,
-            port: config.REDIS_PORT,
-            max_attempts: 3
+            socket: {
+                host: config.REDIS_HOST,
+                port: config.REDIS_PORT,
+                reconnectStrategy: (times) => {
+                    if (times > 10) {
+                        logger.error("Redis connection failed");
+                        process.exit(1);
+                    }
+                    return Math.min(times * 50, 2000);
+                }
+            },
         });
+
+        await this.client.connect();
+        await this.client.ping();
 
         this.client.on('error', this.onError);
 
@@ -37,105 +48,45 @@ export class RedisConnection {
         // console.error(err);
     }
 
-    hasKey(key: string) {
-        return new Promise<any>((resolve, reject) => {
-            this.client.keys(this._makeKey(key), (err, res) => {
-                if (err) {
-                    reject(err);
-                }
-
-                resolve(res ? true : false);
-            })
-        });
+    async hasKey(key: string) {
+        return await this.client.keys(this._makeKey(key));
     }
 
-    lpush(key: string, ...args) {
-        return new Promise((resolve, reject) => {
-            this.client.lpush(this._makeKey(key), ...args, (err, res) => {
-                if (err) reject(err);
-
-                resolve(res ? true : false);
-            });
-        })
+    async lpush(key: string, args: string[]) {
+        return await this.client.lPush(this._makeKey(key), args);
     }
 
-    lrem(key: string, count: number, value: string) {
-        return new Promise((resolve, reject) => {
-            this.client.lrem(this._makeKey(key), count, value, (err, res) => {
-                if (err) return reject(err);
-
-                resolve(res);
-            });
-        })
+    async lrem(key: string, count: number, value: string) {
+        return await this.client.lRem(this._makeKey(key), count, value);
     }
 
-    put(key: string, value: any) {
-        return new Promise((resolve, reject) => {
-            this.client.set(this._makeKey(key), value, (err, res) => {
-                if (err) {
-                    reject(err);
-                }
-
-                resolve(res);
-            });
-        })
+    async put(key: string, value: any) {
+        return await this.client.set(this._makeKey(key), value);
     }
 
-    get(key: string): Promise<string> {
-        return new Promise((resolve, reject) => {
-            this.client.get(this._makeKey(key), (err, res) => {
-                if (err) {
-                    reject(err);
-                }
-
-                resolve(res);
-            });
-        })
+    async get(key: string): Promise<string> {
+        return await this.client.get(this._makeKey(key));
     }
 
 
-    delete(key: string) {
-        return new Promise((resolve, reject) => {
-            this.client.del(this._makeKey(key), (err, res) => {
-                if (err) {
-                    reject(err);
-                }
-
-                resolve(res);
-            });
-        })
+    async delete(key: string) {
+        return await this.client.del(this._makeKey(key));
     }
 
     onSuccess() {
 
     }
 
-    lrange(key: string, start: number, stop: number): Promise<string[]> {
-        return new Promise((resolve, reject) => {
-            this.client.lrange(this._makeKey(key), start, stop, (err, result) => {
-                if (err) reject(err);
-                else resolve(result);
-            })
-        })
+    async lrange(key: string, start: number, stop: number): Promise<string[]> {
+        return await this.client.lRange(this._makeKey(key), start, stop);
     }
 
-    del(key: string) {
-        return new Promise((resolve, reject) => {
-            this.client.del(this._makeKey(key), (err, result) => {
-                if (err) reject(err);
-
-                else resolve(result);
-            });
-        })
+    async del(key: string) {
+        return await this.client.del(this._makeKey(key))
     }
 
-    setex(key: string, seconds: number, value: string) {
-        return new Promise((resolve, reject) => {
-            this.client.setex(key, seconds, value, (err, result) => {
-                if (err) reject(err)
-                else resolve(result)
-            })
-        })
+    async setex(key: string, seconds: number, value: string) {
+        return await this.client.setEx(key, seconds, value);
     }
 
     onMessage(channel, cb) {
@@ -149,14 +100,10 @@ export class RedisConnection {
         })
     }
 
-    subscribe(channel) {
-        // Object.keys(ALLCONFIG)
-        //     .forEach(k => {
-        //         console.log("subcribing ", k, "+", channel);
-        //         this.client.subscribe(ALLCONFIG[k].APP_NAME + channel);
-        //     })
+    subscribe(channel, listener: (message, channel) => void) {
         console.log("subscribing", this._makeKey(channel));
-        this.client.subscribe(this._makeKey(channel));
+
+        this.client.subscribe(this._makeKey(channel), listener);
     }
 
     publish(channel, data: any) {

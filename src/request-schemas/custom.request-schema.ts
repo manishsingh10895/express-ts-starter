@@ -1,5 +1,5 @@
 import { Types } from "mongoose";
-import { ParamSchema, ValidationSchema } from "express-validator";
+import { ParamSchema, Schema as ValidationSchema } from "express-validator";
 
 export const validateObjectId = {
     errorMessage: 'Invalid ID',

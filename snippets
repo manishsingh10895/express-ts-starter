@@ -41,12 +41,12 @@
             "\ttry{",
             "\t\tlet _errors = validationResult(req);",
             "\t\tif (!_errors.isEmpty()) {",
-            "\t\t\treturn NResponse.SchemaError(res, Errors.INVALID_REQUEST, _errors.array());",
+            "\t\t\treturn NResponse.SchemaError(res, Errors.INVALID_REQUEST(), _errors.array());",
             "\t\t}",
             "\t\t$3",
             "\t} catch(err) {",
             "\t\tlogger.error(err);",
-            "\t\treturn NResponse.Error(res, Errors.INTERNAL_SERVER_ERROR, err);",
+            "\t\treturn NResponse.Error(res, Errors.INTERNAL_SERVER_ERROR(), err);",
             "\t}",
             "}"
         ],
@@ -94,7 +94,7 @@
         "body": [
             "let _errors = validationResult(req);",
             "if (!_errors.isEmpty()) {",
-            "\treturn NResponse.Error(res, Errors.INVALID_REQUEST, _errors);",
+            "\treturn NResponse.Error(res, Errors.INVALID_REQUEST(), _errors);",
             "}"
         ],
         "description": "Validation login for a request"
@@ -128,7 +128,7 @@
         "prefix": "ncon",
         "body": [
             "import { Request, Response } from 'express';",
-            "import { LifeError } from '../infra/life-error';",
+            "import { AppError } from '../infra/app-error';",
             "import logger from '../helpers/logger';",
             "import { validationResult } from 'express-validator';",
             "import NResponse from '../services/response.service';",
@@ -159,21 +159,21 @@
         "scope": "javascript, typescript",
         "prefix": "enf",
         "body": [
-            "throw new LifeError(Errors.NOT_FOUND);"
+            "throw new AppError(Errors.NOT_FOUND());"
         ]
     },
     "Unauthr error": {
         "scope": "javascript, typescript",
         "prefix": "eua",
         "body": [
-            "throw new LifeError(Errors.UNAUTHORIZED);"
+            "throw new AppError(Errors.UNAUTHORIZED());"
         ]
     },
     "Invalid Request error": {
         "scope": "javascript, typescript",
         "prefix": "eir",
         "body": [
-            "throw new LifeError(Errors.INVALID_REQUEST);"
+            "throw new AppError(Errors.INVALID_REQUEST());"
         ]
     },
     "Send Response OK": {

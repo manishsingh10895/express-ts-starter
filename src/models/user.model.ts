@@ -5,7 +5,7 @@ import logger from "../helpers/logger";
 import { Roles } from "../infra/roles";
 
 export interface IUserDocument extends Document, IUser {
-
+    _id: any,
 }
 
 export interface IUser {
